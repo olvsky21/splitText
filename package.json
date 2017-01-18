@@ -1,0 +1,28 @@
+{
+  "name": "splittext",
+  "version": "1.0.0",
+  "description": "Split large text files into smaller chunks.",
+  "main": "splitText.js",
+  "scripts": {
+    "test": "splitText.js --chunks 4 ./file.txt"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/olvsky21/splitText.git"
+  },
+  "keywords": [
+    "split",
+    "large",
+    "text",
+    "files",
+    "smaller",
+    "chunks",
+    "giant"
+  ],
+  "author": "olvsky21",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/olvsky21/splitText/issues"
+  },
+  "homepage": "https://github.com/olvsky21/splitText#readme"
+}

@@ -1,4 +1,3 @@
-# splitText
 Simple program to split larger text files into smaller chunks.
 
 To install:
