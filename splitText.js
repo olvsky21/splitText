@@ -10,10 +10,13 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 var version = 1;
 var chunks = 2;
+var numChars = 0;
 var chunkIndex = 0;
 var inputFile = "";
 var outputPath = "./temp";
 var outputName = "";
+var prependToBeginning = "";
+var appendToEnd = "";
 var commands = [
 		{
 			description: "Display help.", 
@@ -34,6 +37,37 @@ var commands = [
 			func: function (value)
 				{
 					outputPath = value;
+				}
+		}, 
+		{
+			description: "Split every number of chars.", 
+			inputs: ["--every-num-chars", "-e", "/e"], 
+			func: function (value)
+				{
+					if (isNaN (value) == true)
+					{
+						console.log ("Num chars argument must be an integer.");
+
+						return;
+					}
+
+					numChars = parseInt (value);
+				}
+		}, 
+		{
+			description: "Prepend a value to the beginning of the chunk.", 
+			inputs: ["--prepend", "-p", "/p"], 
+			func: function (value)
+				{
+					prependToBeginning = value;
+				}
+		}, 
+		{
+			description: "Append a value to the end of the chunk.", 
+			inputs: ["--append", "-a", "/a"], 
+			func: function (value)
+				{
+					appendToEnd = value;
 				}
 		}, 
 		{
@@ -159,28 +193,41 @@ var totalSize = 0;
 console.log ("Opening file " + inputFile);
 var stats = fs.statSync(inputFile);
 var stream = fs.createReadStream (inputFile, { autoClose: true });
+
+if (numChars > 0)
+	stream._readableState.highWaterMark = numChars;
+
 stream.on ("data", function (chunk){
-		currentFile += chunk.toString ();
+		var index = outputName.lastIndexOf(".");
+		var tempName = outputName;
+		var ext = "";
+
+		if(index > 0)
+		{
+			tempName = outputName.substr (0, index);
+			ext = outputName.substr (index + 1);
+		}
+
+		if (ext != "")
+			ext = "." + ext;
+
+		var path = outputPath + "/" + tempName + chunkIndex + ext;
+		currentFile += prependToBeginning + chunk.toString () + appendToEnd;
+
+		if (numChars > 0)
+		{
+			currentFile += "\n";
+			fs.writeFileSync (path, currentFile);
+
+			return;
+		}
+
 		currentFileSize += chunk.length;
 		totalSize += chunk.length;
 
 		if((currentFileSize >= parseInt (stats.size / chunks)) || 
 			(totalSize >= parseInt (stats.size)))
 		{
-			var index = outputName.lastIndexOf(".");
-			var tempName = outputName;
-			var ext = "";
-
-			if(index > 0)
-			{
-				tempName = outputName.substr (0, index);
-				ext = outputName.substr (index + 1);
-			}
-
-			if (ext != "")
-				ext = "." + ext;
-
-			var path = outputPath + "/" + tempName + chunkIndex + ext;
 			console.log ("Writing to file " + path);
 			fs.writeFileSync (path, currentFile);
 

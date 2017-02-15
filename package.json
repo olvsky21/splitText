@@ -1,6 +1,6 @@
 {
   "name": "splittext",
-  "version": "1.0.0",
+  "version": "2.1.0",
   "description": "Split large text files into smaller chunks.",
   "main": "splitText.js",
   "scripts": {
